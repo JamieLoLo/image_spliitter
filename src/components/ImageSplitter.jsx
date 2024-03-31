@@ -91,13 +91,13 @@ function ImageSplitter({ tileSize = 512 }) {
       await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.3, zip, 'small'),
+        splitAndSave(img, 0.4, zip, 'small'),
       ])
 
       const tileDetails = await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.3, zip, 'small'),
+        splitAndSave(img, 0.4, zip, 'small'),
       ])
 
       const content = await zip.generateAsync({ type: 'blob' })
