@@ -18,42 +18,55 @@ function ImageSplitter({ tileSize = 512 }) {
   }, [recordDetails])
 
   async function splitAndSave(img, scale, zip, folder) {
-    const scaledWidth = img.width * scale
-    const scaledHeight = img.height * scale
-    const totalCols = Math.ceil(scaledWidth / tileSize)
-    const totalRows = Math.ceil(scaledHeight / tileSize)
+    const rowsColsMap = {
+      small: 4,
+      medium: 6,
+      large: 10,
+    }
+    const numTiles = rowsColsMap[folder]
+    const tileWidth = Math.ceil((img.width * scale) / numTiles)
+    const tileHeight = Math.ceil((img.height * scale) / numTiles)
+    const canvasWidth = tileWidth * numTiles
+    const canvasHeight = tileHeight * numTiles
+
     const tempCanvas = document.createElement('canvas')
-    tempCanvas.width = totalCols * tileSize
-    tempCanvas.height = totalRows * tileSize
+    tempCanvas.width = canvasWidth
+    tempCanvas.height = canvasHeight
     const tempCtx = tempCanvas.getContext('2d')
 
-    const offsetX = (tempCanvas.width - scaledWidth) / 2
-    const offsetY = (tempCanvas.height - scaledHeight) / 2
-    tempCtx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight)
+    // 图像居中绘制
+    const offsetX = (canvasWidth - img.width * scale) / 2
+    const offsetY = (canvasHeight - img.height * scale) / 2
+    tempCtx.drawImage(
+      img,
+      offsetX,
+      offsetY,
+      img.width * scale,
+      img.height * scale
+    )
 
     let promises = []
 
-    for (let i = 0; i < totalRows; i++) {
-      for (let j = 0; j < totalCols; j++) {
+    for (let i = 0; i < numTiles; i++) {
+      for (let j = 0; j < numTiles; j++) {
         const canvas = document.createElement('canvas')
-        canvas.width = tileSize
-        canvas.height = tileSize
+        canvas.width = tileWidth
+        canvas.height = tileHeight
         const ctx = canvas.getContext('2d')
 
         ctx.drawImage(
           tempCanvas,
-          j * tileSize,
-          i * tileSize,
-          tileSize,
-          tileSize,
+          j * tileWidth,
+          i * tileHeight,
+          tileWidth,
+          tileHeight,
           0,
           0,
-          tileSize,
-          tileSize
+          tileWidth,
+          tileHeight
         )
 
-        // 正確索引計算
-        const index = i * totalCols + j
+        const index = i * numTiles + j
         const indexWithLeadingZeros = (index + 1).toString().padStart(3, '0')
 
         const promise = new Promise((resolve) => {
@@ -68,12 +81,12 @@ function ImageSplitter({ tileSize = 512 }) {
         promises.push(promise)
       }
     }
+
     return Promise.all(promises).then(() => {
-      // 在所有切片都處理好之後返回需要紀錄的數據
       return {
         scale,
-        rows: totalRows,
-        cols: totalCols
+        rows: numTiles,
+        cols: numTiles,
       }
     })
   }
@@ -92,13 +105,13 @@ function ImageSplitter({ tileSize = 512 }) {
       await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.4, zip, 'small')
+        splitAndSave(img, 0.4, zip, 'small'),
       ])
 
       const tileDetails = await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.4, zip, 'small')
+        splitAndSave(img, 0.4, zip, 'small'),
       ])
 
       const content = await zip.generateAsync({ type: 'blob' })
@@ -116,7 +129,7 @@ function ImageSplitter({ tileSize = 512 }) {
         mediumRow: tileDetails.find((detail) => detail.scale === 0.6).rows,
         mediumCol: tileDetails.find((detail) => detail.scale === 0.6).cols,
         largeRow: tileDetails.find((detail) => detail.scale === 1).rows,
-        largeCol: tileDetails.find((detail) => detail.scale === 1).cols
+        largeCol: tileDetails.find((detail) => detail.scale === 1).cols,
       }
 
       setRecordDetails((prev) => [...prev, newRecord])
