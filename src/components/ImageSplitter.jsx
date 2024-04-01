@@ -72,14 +72,15 @@ function ImageSplitter({ tileSize = 512 }) {
       // 在所有切片都處理好之後返回需要紀錄的數據
       return {
         scale,
-        totalTiles: totalCols * totalRows,
+        rows: totalRows,
+        cols: totalCols
       }
     })
   }
 
   const downloadTiles = async () => {
     const img = new Image()
-    img.src = `../origin_image/${imageName}`
+    img.src = `./origin_image/${imageName}`
 
     try {
       await new Promise((resolve, reject) => {
@@ -91,13 +92,13 @@ function ImageSplitter({ tileSize = 512 }) {
       await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.4, zip, 'small'),
+        splitAndSave(img, 0.4, zip, 'small')
       ])
 
       const tileDetails = await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.4, zip, 'small'),
+        splitAndSave(img, 0.4, zip, 'small')
       ])
 
       const content = await zip.generateAsync({ type: 'blob' })
@@ -109,13 +110,13 @@ function ImageSplitter({ tileSize = 512 }) {
       document.body.removeChild(link)
 
       const newRecord = {
-        recordImage: imageName,
         recordFolder: folderName,
-        smallTiles: tileDetails.find((detail) => detail.scale === 0.4)
-          .totalTiles,
-        mediumTiles: tileDetails.find((detail) => detail.scale === 0.6)
-          .totalTiles,
-        largeTiles: tileDetails.find((detail) => detail.scale === 1).totalTiles,
+        smallRow: tileDetails.find((detail) => detail.scale === 0.4).rows,
+        smallCol: tileDetails.find((detail) => detail.scale === 0.4).cols,
+        mediumRow: tileDetails.find((detail) => detail.scale === 0.6).rows,
+        mediumCol: tileDetails.find((detail) => detail.scale === 0.6).cols,
+        largeRow: tileDetails.find((detail) => detail.scale === 1).rows,
+        largeCol: tileDetails.find((detail) => detail.scale === 1).cols
       }
 
       setRecordDetails((prev) => [...prev, newRecord])
@@ -201,17 +202,24 @@ function ImageSplitter({ tileSize = 512 }) {
               <th className='px-[20px] py-1 border-2 border-black'>
                 Folder Name
               </th>
+
               <th className='px-[20px] py-1 border-2 border-black'>
-                Image Name
+                Small Cols
               </th>
               <th className='px-[20px] py-1 border-2 border-black'>
-                Small Tiles
+                Small Rows
               </th>
               <th className='px-[20px] py-1 border-2 border-black'>
-                Medium Tiles
+                Medium Cols
               </th>
               <th className='px-[20px] py-1 border-2 border-black'>
-                Large Tiles
+                Medium Rows
+              </th>
+              <th className='px-[20px] py-1 border-2 border-black'>
+                Large Cols
+              </th>
+              <th className='px-[20px] py-1 border-2 border-black'>
+                Large Rows
               </th>
             </tr>
           </thead>
@@ -221,10 +229,13 @@ function ImageSplitter({ tileSize = 512 }) {
                 <td className='py-1 border-2 border-black'>
                   {el.recordFolder}
                 </td>
-                <td className='py-1 border-2 border-black'>{el.recordImage}</td>
-                <td className='border-2 py-1 border-black'>{el.smallTiles}</td>
-                <td className='border-2 py-1 border-black'>{el.mediumTiles}</td>
-                <td className='border-2 py-1 border-black'>{el.largeTiles}</td>
+
+                <td className='border-2 py-1 border-black'>{el.smallCol}</td>
+                <td className='border-2 py-1 border-black'>{el.smallRow}</td>
+                <td className='border-2 py-1 border-black'>{el.mediumCol}</td>
+                <td className='border-2 py-1 border-black'>{el.mediumRow}</td>
+                <td className='border-2 py-1 border-black'>{el.largeCol}</td>
+                <td className='border-2 py-1 border-black'>{el.largeRow}</td>
               </tr>
             ))}
           </tbody>
