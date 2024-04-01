@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import JSZip from 'jszip'
 
-function ImageSplitter({ tileSize = 512 }) {
+function ImageSplitter() {
   const [folderName, setFolderName] = useState('')
   const [imageName, setImageName] = useState('')
   const [isImageNameEmpty, setIsImageNameEmpty] = useState(false)
@@ -215,25 +215,6 @@ function ImageSplitter({ tileSize = 512 }) {
               <th className='px-[20px] py-1 border-2 border-black'>
                 Folder Name
               </th>
-
-              <th className='px-[20px] py-1 border-2 border-black'>
-                Small Cols
-              </th>
-              <th className='px-[20px] py-1 border-2 border-black'>
-                Small Rows
-              </th>
-              <th className='px-[20px] py-1 border-2 border-black'>
-                Medium Cols
-              </th>
-              <th className='px-[20px] py-1 border-2 border-black'>
-                Medium Rows
-              </th>
-              <th className='px-[20px] py-1 border-2 border-black'>
-                Large Cols
-              </th>
-              <th className='px-[20px] py-1 border-2 border-black'>
-                Large Rows
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -242,13 +223,6 @@ function ImageSplitter({ tileSize = 512 }) {
                 <td className='py-1 border-2 border-black'>
                   {el.recordFolder}
                 </td>
-
-                <td className='border-2 py-1 border-black'>{el.smallCol}</td>
-                <td className='border-2 py-1 border-black'>{el.smallRow}</td>
-                <td className='border-2 py-1 border-black'>{el.mediumCol}</td>
-                <td className='border-2 py-1 border-black'>{el.mediumRow}</td>
-                <td className='border-2 py-1 border-black'>{el.largeCol}</td>
-                <td className='border-2 py-1 border-black'>{el.largeRow}</td>
               </tr>
             ))}
           </tbody>
