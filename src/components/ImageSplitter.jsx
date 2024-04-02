@@ -19,9 +19,9 @@ function ImageSplitter() {
 
   async function splitAndSave(img, scale, zip, folder) {
     const rowsColsMap = {
-      small: 4,
+      small: 1,
       medium: 6,
-      large: 10,
+      large: 10
     }
     const numTiles = rowsColsMap[folder]
     const tileWidth = Math.ceil((img.width * scale) / numTiles)
@@ -86,7 +86,7 @@ function ImageSplitter() {
       return {
         scale,
         rows: numTiles,
-        cols: numTiles,
+        cols: numTiles
       }
     })
   }
@@ -105,13 +105,13 @@ function ImageSplitter() {
       await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.4, zip, 'small'),
+        splitAndSave(img, 0.4, zip, 'small')
       ])
 
       const tileDetails = await Promise.all([
         splitAndSave(img, 1, zip, 'large'),
         splitAndSave(img, 0.6, zip, 'medium'),
-        splitAndSave(img, 0.4, zip, 'small'),
+        splitAndSave(img, 0.4, zip, 'small')
       ])
 
       const content = await zip.generateAsync({ type: 'blob' })
@@ -129,7 +129,7 @@ function ImageSplitter() {
         mediumRow: tileDetails.find((detail) => detail.scale === 0.6).rows,
         mediumCol: tileDetails.find((detail) => detail.scale === 0.6).cols,
         largeRow: tileDetails.find((detail) => detail.scale === 1).rows,
-        largeCol: tileDetails.find((detail) => detail.scale === 1).cols,
+        largeCol: tileDetails.find((detail) => detail.scale === 1).cols
       }
 
       setRecordDetails((prev) => [...prev, newRecord])
