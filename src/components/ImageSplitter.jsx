@@ -134,15 +134,33 @@ function ImageSplitter() {
 
       setRecordDetails((prev) => [...prev, newRecord])
       setImageName('')
-      setImageName('')
     } catch (error) {
       setIsImageExist(false)
       console.error('Error loading image:', error)
     }
   }
 
+  const handleDrop = (event) => {
+    event.preventDefault()
+    const file = event.dataTransfer.files[0]
+    if (file) {
+      const fileName = file.name
+      setImageName(fileName)
+      setIsImageNameEmpty(false)
+      setIsImageExist(true)
+    }
+  }
+
+  const handleDragOver = (event) => {
+    event.preventDefault()
+  }
+
   return (
-    <div className='fixed top-0 left-0 screen-setting bg-mainBg-100 z-[999] pointer-events-auto overflow-y-scroll '>
+    <div
+      className='fixed top-0 left-0 screen-setting bg-mainBg-100 z-[999] pointer-events-auto overflow-y-scroll '
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
       <div className='w-full h-full flex items-center justify-center'>
         <div className='flex flex-col justify-center w-[500px]  bg-mainOrange-100 py-[16px] rounded-[20px] px-[20px] tracking-[0px]'>
           <p className='text-[28px]  roboto-black '>"IMAGE SPLITTER"</p>
